@@ -1,18 +1,21 @@
 package com.snowman.sportclubolymp;
 
+import com.snowman.sportclubolymp.data.ClubOlympusContract.MemberEntry;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class AddMemberActivity extends AppCompatActivity {
     private EditText firstNameEditText;
@@ -21,7 +24,20 @@ public class AddMemberActivity extends AppCompatActivity {
     private Spinner genderSpinner;
     private int gender = 0;
     private ArrayAdapter spinnerAdapter;
-    private ArrayList spinnerArrayList;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.addMember){
+            Toast.makeText(this, "Member was Added", Toast.LENGTH_SHORT).show();
+        } else if(id == R.id.deleteMember){
+            Toast.makeText(this, "Member was deleted", Toast.LENGTH_SHORT).show();
+        } else if(id == android.R.id.home){
+            NavUtils.navigateUpFromSameTask(this);
+        }
+
+        return true;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,11 +68,11 @@ public class AddMemberActivity extends AppCompatActivity {
                 if(selectedGender != null){
 
                  if(selectedGender.equals("Male")){
-                    gender = 1;
+                    gender = MemberEntry.GENDER_MALE;
                 }else if(selectedGender.equals("Female")){
-                    gender = 2;
-                }else {
-                     gender = 0;
+                    gender = MemberEntry.GENDER_FEMALE;
+                }else if(selectedGender.equals("Unknown")){
+                     gender = MemberEntry.GENDER_UNKNOWN;
                  }
             }
                 Toast.makeText(AddMemberActivity.this, "Пол номер = " + gender, Toast.LENGTH_SHORT).show();
@@ -67,5 +83,10 @@ public class AddMemberActivity extends AppCompatActivity {
                 gender = 0;
             }
         });
+
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar !=null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
