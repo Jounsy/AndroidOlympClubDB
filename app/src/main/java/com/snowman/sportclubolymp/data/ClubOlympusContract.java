@@ -1,16 +1,24 @@
 package com.snowman.sportclubolymp.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public final class ClubOlympusContract{
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Olympus";
+    public static final String SCHEME = "content://";
+    public static final String AUTHORITY = "com.snowman.sportclubolymp";
+    public static final String PATH_MEMBERS = "members";
+    public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY);
+
 
     private ClubOlympusContract(){
 
     }
 
     public static final class MemberEntry implements BaseColumns{
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI,PATH_MEMBERS);
         public static final String TABLE_NAME = "members";
 
         public static final String ID = BaseColumns._ID;
