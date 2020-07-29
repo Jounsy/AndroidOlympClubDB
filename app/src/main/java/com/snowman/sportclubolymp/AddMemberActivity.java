@@ -1,11 +1,16 @@
 package com.snowman.sportclubolymp;
 
 import com.snowman.sportclubolymp.data.ClubOlympusContract.MemberEntry;
+import com.snowman.sportclubolymp.model.Member;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +25,7 @@ import android.widget.Toast;
 public class AddMemberActivity extends AppCompatActivity {
     private EditText firstNameEditText;
     private EditText lastNameEditText;
-    private EditText groupEditText;
+    private EditText sportEditText;
     private Spinner genderSpinner;
     private int gender = 0;
     private ArrayAdapter spinnerAdapter;
@@ -29,6 +34,7 @@ public class AddMemberActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.addMember){
+            insertMember();
             Toast.makeText(this, "Member was Added", Toast.LENGTH_SHORT).show();
         } else if(id == R.id.deleteMember){
             Toast.makeText(this, "Member was deleted", Toast.LENGTH_SHORT).show();
@@ -54,7 +60,7 @@ public class AddMemberActivity extends AppCompatActivity {
 
         firstNameEditText = findViewById(R.id.textEditName);
         lastNameEditText = findViewById(R.id.textEditSurname);
-        groupEditText = findViewById(R.id.textEditGroup);
+        sportEditText = findViewById(R.id.textEditGroup);
         genderSpinner = findViewById(R.id.spinnerGender);
 
         spinnerAdapter = ArrayAdapter.createFromResource(this,
@@ -88,5 +94,26 @@ public class AddMemberActivity extends AppCompatActivity {
         if (actionBar !=null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    private void insertMember(){
+        String firstName = firstNameEditText.getText().toString().trim();
+        String lasttName = lastNameEditText.getText().toString().trim();
+        String sport = sportEditText.getText().toString().trim();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MemberEntry.COLUMN_FIRST_NAME,firstName);
+        contentValues.put(MemberEntry.COLUMN_LAST_NAME,lasttName);
+        contentValues.put(MemberEntry.COLUMN_SPORT,sport);
+        contentValues.put(MemberEntry.COLUMN_GENDER,gender);
+
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = contentResolver.insert(MemberEntry.CONTENT_URI,contentValues);
+
+            if(uri == null){
+                Toast.makeText(this, "Uri is null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
+            }
     }
 }
