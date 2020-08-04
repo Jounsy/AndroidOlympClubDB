@@ -98,12 +98,16 @@ public class AddMemberActivity extends AppCompatActivity {
 
     private void insertMember(){
         String firstName = firstNameEditText.getText().toString().trim();
-        String lasttName = lastNameEditText.getText().toString().trim();
+        if(firstName.equals("")){
+            throw new IllegalArgumentException("You have no input first name");
+        }
+
+        String lastName = lastNameEditText.getText().toString().trim();
         String sport = sportEditText.getText().toString().trim();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(MemberEntry.COLUMN_FIRST_NAME,firstName);
-        contentValues.put(MemberEntry.COLUMN_LAST_NAME,lasttName);
+        contentValues.put(MemberEntry.COLUMN_LAST_NAME,lastName);
         contentValues.put(MemberEntry.COLUMN_SPORT,sport);
         contentValues.put(MemberEntry.COLUMN_GENDER,gender);
 

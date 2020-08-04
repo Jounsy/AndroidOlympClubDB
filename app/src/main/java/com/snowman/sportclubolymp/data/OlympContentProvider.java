@@ -53,13 +53,25 @@ public class OlympContentProvider extends ContentProvider {
         return cursor;
     }
 
-    @Override
-    public String getType(Uri uri) {
-        return null;
-    }
-
-    @Override
+       @Override
     public Uri insert(Uri uri, ContentValues values) {
+        String firstName = values.getAsString(MemberEntry.COLUMN_FIRST_NAME);
+        if(firstName == null){
+            throw new IllegalArgumentException("You have no input first name");
+        }
+        String lastName = values.getAsString(MemberEntry.COLUMN_LAST_NAME);
+           if(lastName == null) {
+               throw new IllegalArgumentException("You have no input last name");
+           }
+        Integer gender = values.getAsInteger(MemberEntry.COLUMN_GENDER);
+           if(gender == null || !(gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE || gender == MemberEntry.GENDER_UNKNOWN)) {
+               throw new IllegalArgumentException("You have no input sport");
+           }
+        String sport = values.getAsString(MemberEntry.COLUMN_SPORT);
+           if(sport == null) {
+               throw new IllegalArgumentException("You have no input sport");
+           }
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int match = uriMatcher.match(uri);
         switch(match){
@@ -79,11 +91,79 @@ public class OlympContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        int match = uriMatcher.match(uri);
+        switch(match){
+            case MEMBERS:
+                return db.delete(MemberEntry.TABLE_NAME, selection,selectionArgs);
+            case MEMBER_ID:
+                selection = MemberEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return db.delete(MemberEntry.TABLE_NAME,selection,selectionArgs);
+            default:
+                Toast.makeText(getContext(), "Unknown URI", Toast.LENGTH_SHORT).show();
+
+                throw new IllegalStateException("Can't delete incorrect URI: " + uri);
+        }
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+
+        if (values.containsKey(MemberEntry.COLUMN_FIRST_NAME)) {
+            String firstName = values.getAsString(MemberEntry.COLUMN_FIRST_NAME);
+            if(firstName == null){
+                throw new IllegalArgumentException("You have no input first name");
+            }
+        }
+        if (values.containsKey(MemberEntry.COLUMN_LAST_NAME)) {
+            String lastName = values.getAsString(MemberEntry.COLUMN_LAST_NAME);
+            if(lastName == null) {
+                throw new IllegalArgumentException("You have no input last name");
+            }
+        }
+        if (values.containsKey(MemberEntry.COLUMN_GENDER)) {
+            Integer gender = values.getAsInteger(MemberEntry.COLUMN_GENDER);
+            if(gender == null || !(gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE || gender == MemberEntry.GENDER_UNKNOWN)) {
+                throw new IllegalArgumentException("You have no input sport");
+            }
+        }
+        if (values.containsKey(MemberEntry.COLUMN_SPORT)) {
+            String sport = values.getAsString(MemberEntry.COLUMN_SPORT);
+            if(sport == null) {
+                throw new IllegalArgumentException("You have no input sport");
+            }
+        }
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        int match = uriMatcher.match(uri);
+        switch(match){
+            case MEMBERS:
+                return db.update(MemberEntry.TABLE_NAME,values, selection,selectionArgs);
+            case MEMBER_ID:
+                selection = MemberEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return db.update(MemberEntry.TABLE_NAME,values,selection,selectionArgs);
+            default:
+                Toast.makeText(getContext(), "Unknown URI", Toast.LENGTH_SHORT).show();
+
+                throw new IllegalStateException("Can't update incorrect URI: " + uri);
+        }
+
     }
-}
+
+    public String getType(Uri uri){
+        int match = uriMatcher.match(uri);
+        switch(match) {
+            case MEMBERS:
+                return MemberEntry.CONTENT_MULTIPLE_ITEMS;
+            case MEMBER_ID:
+                return MemberEntry.CONTENT_SINGLE_ITEM;
+            default:
+                Toast.makeText(getContext(), "Unknown URI", Toast.LENGTH_SHORT).show();
+
+                throw new IllegalStateException("Unknown URI: " + uri);
+        }
+        }
+    }
+
